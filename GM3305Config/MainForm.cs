@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 using GM3305Comm;
+using System.Threading;
 
 namespace GM3305Config
 {
@@ -33,6 +34,17 @@ namespace GM3305Config
 
             LoadSettings();
             Apply();
+
+            deviceMonitor_ = new DeviceMonitor(Handle);
+            deviceMonitor_.DeviceArrived += DeviceMonitor__DeviceArrived;
+        }
+
+        private void DeviceMonitor__DeviceArrived(DeviceMonitor mon, string name)
+        {
+            if (name.Contains("#VID_1D57&PID_FA0A#")) {
+                Thread.Sleep(500);
+                Apply();
+            }
         }
 
         private void SaveSettings()
@@ -113,5 +125,7 @@ namespace GM3305Config
             labelLEDBlinkSpeed.Enabled = en;
             comboBoxLEDBlinkSpeed.Enabled = en;
         }
+
+        private DeviceMonitor deviceMonitor_;
     }
 }
